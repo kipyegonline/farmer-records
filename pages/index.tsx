@@ -11,6 +11,7 @@ import { getProjects } from "../Redux/projects.slice";
 import { Button, TextField } from "@mui/material";
 import UseInput from "../utils/input/useInput";
 import AddActivity from "../components/AddActivity";
+import AddProject from "../components/AddProject";
 
 
 const Home: NextPage = ({ data =[]}:{data:Object[]}) => {
@@ -26,8 +27,14 @@ const Home: NextPage = ({ data =[]}:{data:Object[]}) => {
   return (
     <div className={styles.container}>
       <main className={styles.main} >
+        <div className="flex justify-evenly items-start">
+          <AddProject />
+          <hr/>
      
        <AddActivity/>
+
+        </div>
+      
         
 
         <ul>

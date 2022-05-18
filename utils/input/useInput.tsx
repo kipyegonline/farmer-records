@@ -53,19 +53,21 @@ export const SnackBarComponent = ({
 
 type Server = { success: boolean; helperText: string };
 
-export const SendToServer = async <T extends {}>(url: string, payload: T) => {
+export const SendToServer = <T extends {}>(url: string, payload: T) => {
   const [success, setSuccess] = React.useState(false);
   const [helperText, setText] = React.useState("");
 
-  const sendData = async (url) => {
+  const sendData = async (url: string) => {
     try {
-      const res = await axios.post(`${process.env.api}${url}`, payload);
+      const res = await axios.post(`${process.env.api}${url}`, payload, {
+        headers: { authorization: `bearer 123455` },
+      });
       if (res.status === 200) {
         setSuccess(true);
         setText(res.statusText);
       }
     } catch (error) {
-      if (error) setText(error.message);
+      if (typeof error?.message === "string") if (error) setText(error.message);
     }
     setTimeout(() => {
       setText("");

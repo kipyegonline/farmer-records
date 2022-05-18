@@ -1,5 +1,5 @@
-import React, { FocusEventHandler } from "react";
-import axios, { AxiosResponseHeaders } from "axios";
+import React from "react";
+import axios from "axios";
 import type { NextPage } from "next";
 import {
   TextField,
@@ -8,8 +8,6 @@ import {
   Card,
   SnackbarCloseReason,
   Box,
-  Modal,
-  Backdrop,
 } from "@mui/material";
 import UseInput, { SnackBarComponent } from "../utils/input/useInput";
 
@@ -32,6 +30,7 @@ export default function SignUp() {
   const [password, resetPassword] = UseInput("");
   const [cpassword, resetcPassword] = UseInput("");
   const [email, resetEmail] = UseInput("");
+  const [phone, resetPhone] = UseInput("");
   const [helperText, setText] = React.useState("");
   const [loading, setLoad] = React.useState(false);
 
@@ -43,9 +42,6 @@ export default function SignUp() {
         ? ""
         : `${event.target.name} is required`
     );
-  };
-  const throwErr = () => {
-    throw new RangeError("Range error");
   };
 
   // for closing the snack bar
@@ -67,6 +63,8 @@ export default function SignUp() {
       setText("A username is required");
     } else if (email.value.trim().length < 5) {
       setText("A valid email address is required");
+    } else if (phone.value.trim().length < 9) {
+      setText("A valid mobile phone number  is required");
     } else if (password.value.trim().length < 5) {
       setText("A password with atleast 6 characters  is required");
     } else if (cpassword.value.trim().length < 5) {
@@ -93,6 +91,7 @@ export default function SignUp() {
           resetName();
           resetPassword();
           resetcPassword();
+          resetPhone();
         } else {
           throw new Error(res.statusText);
         }
@@ -117,6 +116,7 @@ export default function SignUp() {
         username: username.value,
         email: email.value,
         password: password.value,
+        phone: phone.value,
       };
       let url = process.env.api + "?add-user=true";
       sendToServer(url, payload);
@@ -134,7 +134,7 @@ export default function SignUp() {
         </p>
       }
     >
-      <Box className="p-4 mt-8 flex flex-col justify-evenly flex-1 md:flex-row">
+      <Box className="p-4 mt-8 flex flex-col justify-evenly flex-1  md:flex-row-reverse md:mt-2">
         <AddFarmNotes />
         <AddActivity />
         <AddInput />
@@ -142,6 +142,7 @@ export default function SignUp() {
           onSubmit={handleSubmit}
           className="bg-white p-2 flex justify-evenly items-stretch  mx-auto mt-15 flex-1 flex-col border-2 border-white"
           style={{ maxWidth: 400 }}
+          data-testid="signup-form"
         >
           <Card />
           <Typography
@@ -179,6 +180,16 @@ export default function SignUp() {
             name="Email"
             type="email"
             label="Enter email"
+            onBlur={handleBlur}
+          />
+          <TextField
+            variant="filled"
+            className="my-1 py-1 px-1"
+            {...phone}
+            id="phone"
+            name="Phone number"
+            type="telephone"
+            label="Enter mobile phone number"
             onBlur={handleBlur}
           />
           <TextField

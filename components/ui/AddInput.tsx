@@ -1,5 +1,7 @@
 import React from "react";
 import axios from "axios";
+import { v4 } from "uuid";
+import { useForm, SubmitHandler } from "react-hook-form";
 import {
   TextField,
   Button,
@@ -10,44 +12,33 @@ import {
 import UseInput, { SnackBarComponent } from "../../utils/input/useInput";
 import { SnackbarKey } from "notistack";
 
+type InputProps = { input: string; cost: number | string; date: string };
 export default function AddInput() {
-  const [input, resetInput] = UseInput("");
-  const [date, resetDate] = UseInput(new Date());
-  const [cost, resetCost] = UseInput(0);
   const [helperText, setText] = React.useState("");
   const [load, setLoad] = React.useState(false);
 
-  const validateValues = () => {
-    let valid = false;
-    if (input.value.trim().length < 1) {
-      setText("Enter input name");
-    } else if (date.value.length < 9) {
-      setText("Enter date of input purchase");
-    } else if (+cost.value < 10) {
-      setText("Enter cost of input");
-    } else {
-      valid = true;
-    }
-    setTimeout(() => setText(""), 4000);
-    return valid;
-  };
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm({ defaultValues: { input: "", date: "", cost: 0 } });
+
   const onClose = (e: React.MouseEvent, r: SnackbarKey): void | boolean => {
     if (r === "clickaway") return;
     setText("");
   };
-  const onBlur = (e: React.FocusEvent) => {
-    let target = e.target as HTMLInputElement;
 
-    if (target.value.trim().length < 3) setText(`${target.name} is required`);
-  };
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit: SubmitHandler<InputProps> = (data: InputProps) => {
+    console.log(data, "fdeb");
+    let cost = data.cost;
+    if (cost.includes(",")) cost = +cost.split(",").join("");
 
-    if (validateValues()) {
+    if (cost > 5 && data.date.trim().length > 8 && data.input.length > 3) {
       const payload = {
-        inputName: input.value,
-        cost: cost.value,
-        date: date.value,
+        ...data,
+        cost,
+        altId: v4(),
       };
       // send to Server side
 
@@ -58,9 +49,9 @@ export default function AddInput() {
           console.log("RES", res);
           if (res.status === 200) {
             setText("Information added successfully!");
-            resetCost();
-            resetDate();
-            resetInput();
+            setValue("date", "");
+            setValue("input", "");
+            setValue("cost", 0);
           } else if (res.status === 404) {
             throw new Error("Server not found");
           } else {
@@ -74,46 +65,53 @@ export default function AddInput() {
         });
       // reset state
     } else {
-      setText("All fields are required");
+      setText("Some fields are missing");
       setTimeout(() => setText(""), 4000);
     }
   };
+
   return (
     <Box className="my-2 mx-auto">
       <form
         style={{ maxWidth: 400 }}
         className="flex flex-col flex-1  justify-evenly bg-white p-4"
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmit(onSubmit)}
         data-testid="input-form"
       >
         <Typography className="text-center" variant="subtitle1">
           Add project farm inputs
         </Typography>
         <TextField
-          name="input name"
           className="my-2 py-1 "
           variant="filled"
           type="text"
           label="Enter input name"
-          {...input}
-          onBlur={onBlur}
-          helperText="You can use commas to separate your items."
+          {...register("input", {
+            required: true,
+          })}
+          error={!!errors.input}
+          helperText={
+            errors.input
+              ? "Farm input name is required"
+              : "You can use commas to separate your items."
+          }
         />
         <TextField
-          name="date"
           className="my-2 py-1 "
           variant="filled"
           type="date"
           InputLabelProps={{ shrink: true }}
           label="date"
-          helperText="Add date of input purchase"
-          {...date}
-          onBlur={onBlur}
+          helperText={
+            errors.date ? "A date is required" : "Add date of input purchase"
+          }
+          {...register("date", { required: true, minLength: 9 })}
+          error={!!errors.date}
         />
         <TextField
-          name="Cost of input"
           className="my-2 mt-4 py-1 "
           type="number"
+          {...register("cost", { required: true, min: 10 })}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start" className="font-bold">
@@ -123,10 +121,12 @@ export default function AddInput() {
             inputMode: "numeric",
           }}
           InputLabelProps={{ shrink: true }}
-          onBlur={onBlur}
           variant="filled"
           label="cost of input"
-          {...cost}
+          error={!!errors.cost}
+          helperText={
+            errors.cost ? "A cost required" : "Add date of input purchase"
+          }
         />
 
         <Button
@@ -240,10 +240,3 @@ export const AddFarmNotes = () => {
     </Box>
   );
 };
-
-function makeArr<T>(nums: T[]): T {
-  return nums[nums.length - 1];
-}
-
-let mynum = makeArr([1, 2, 3, 4, 5, 6]);
-let mynm = makeArr(["as", "asd", "asdf", "asdfg"]);

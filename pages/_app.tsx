@@ -8,7 +8,6 @@ import Layout from "../components/ui/Layout";
 
 import store from "../Redux/store";
 function MyApp({ Component, pageProps }: AppProps) {
-  console.log("page props: ", pageProps);
   return (
     <Provider store={store}>
       <Layout title="Home">
