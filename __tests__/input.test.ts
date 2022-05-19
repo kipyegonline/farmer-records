@@ -6,7 +6,11 @@ describe("User input", () => {
 
   it("<Snapshot/>", () => {
     const el = screen.getByTestId("signup-form");
-    expect(el).toBeVisible();
+    expect(el).toBeInDocument();
     screen.debug();
   });
+});
+
+describe("NaN", () => {
+  expect(false).toBeTruthy();
 });

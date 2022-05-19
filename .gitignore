@@ -2,6 +2,10 @@
 
 #Php code
 /api
+
+# Build
+/out
+
 # dependencies
 /node_modules
 /.pnp

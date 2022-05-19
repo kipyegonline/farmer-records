@@ -1,4 +1,4 @@
-import React from "react"
+import React from "react";
 import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
@@ -13,47 +13,22 @@ import UseInput from "../utils/input/useInput";
 import AddActivity from "../components/AddActivity";
 import AddProject from "../components/AddProject";
 
-
-const Home: NextPage = ({ data =[]}:{data:Object[]}) => {
-  
- 
-
+const Home: NextPage = () => {
   const dispatch = useDispatch();
   React.useEffect(() => {
-    dispatch(getProjects([{ name: "Jules" }] ))
-  
-  }, [])
-  
+    dispatch(getProjects([{ name: "Jules" }]));
+  }, []);
+  const myLoader = ({ src }) => src;
   return (
     <div className={styles.container}>
-      <main className={styles.main} >
+      <main className={styles.main}>
         <div className="flex justify-evenly items-start">
           <AddProject />
-          <hr/>
-     
-       <AddActivity/>
+          <hr />
 
+          <AddActivity />
         </div>
-      
-        
-
-        <ul>
-          {!!data?.length && data?
-            .map((item, i) => {
-              return (
-                <li key={i}>
-                  <Link href={`/${item.id}`}>
-                    <a>
-                   {item.name}
-                    </a>
-                  </Link>
-                </li>
-              );
-            })}
-        </ul>
       </main>
-     
-      
 
       <footer className={styles.footer}>
         <a
@@ -63,7 +38,13 @@ const Home: NextPage = ({ data =[]}:{data:Object[]}) => {
         >
           Powered by{" "}
           <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
+            <Image
+              src="/vercel.svg"
+              alt="Vercel Logo"
+              loader={myLoader}
+              width={72}
+              height={16}
+            />
           </span>
         </a>
       </footer>
@@ -73,6 +54,7 @@ const Home: NextPage = ({ data =[]}:{data:Object[]}) => {
 
 export default Home;
 
+/*
 //export
   async function getStaticProps() {
   let url = "https://jsonplaceholder.typicode.com/users";
@@ -89,3 +71,4 @@ export default Home;
     console.log(error?.message);
   }
 }
+*/

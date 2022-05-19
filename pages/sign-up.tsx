@@ -1,5 +1,6 @@
 import React from "react";
 import axios from "axios";
+import { v4 } from "uuid";
 import type { NextPage } from "next";
 import {
   TextField,
@@ -117,6 +118,7 @@ export default function SignUp() {
         email: email.value,
         password: password.value,
         phone: phone.value,
+        altId: v4(),
       };
       let url = process.env.api + "?add-user=true";
       sendToServer(url, payload);

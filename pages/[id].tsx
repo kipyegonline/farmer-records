@@ -13,7 +13,7 @@ export default function Post({ post }) {
     <div className="p-4 m-8 bg-gray-600">Hate the game,not the player.... </div>
   );
 }
-
+/*
 export async function getStaticPaths() {
   // Call an external API endpoint to get posts
   let url = "https://jsonplaceholder.typicode.com/users/";
@@ -45,3 +45,4 @@ export async function getStaticProps({ params }) {
     console.log(error?.message);
   }
 }
+*/
