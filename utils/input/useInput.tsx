@@ -24,7 +24,8 @@ export default function UseInput<a>(initialState: a): InputValue {
   return [input, () => setValue(initialState)];
 }
 
-export const SnackBarComponent = ({
+type SnackBarProps = { handleClose(): void; helperText: string };
+export const SnackBarComponent: React.FC<SnackBarProps> = ({
   handleClose = (e: Event, f: SnackbarCloseReason): void | boolean => f,
   helperText = "",
 }) => {

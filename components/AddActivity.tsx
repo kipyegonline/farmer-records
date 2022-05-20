@@ -50,7 +50,7 @@ export default function AddActivity() {
       try {
         setSuccess(true);
         const res = await axios.post(
-          `${process.env.api}?add-project=true`,
+          `${process.env.api}?add-activity=true`,
           payload,
           { headers: { authorization: `Bearer token` } }
         );

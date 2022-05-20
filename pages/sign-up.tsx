@@ -9,6 +9,7 @@ import {
   Card,
   SnackbarCloseReason,
   Box,
+  Alert,
 } from "@mui/material";
 import UseInput, { SnackBarComponent } from "../utils/input/useInput";
 
@@ -23,6 +24,7 @@ interface InputTypes {
   password: string;
   email: string;
 }
+type Existence = { exists: boolean; status: string };
 
 export default function SignUp() {
   // state for form
@@ -34,6 +36,18 @@ export default function SignUp() {
   const [phone, resetPhone] = UseInput("");
   const [helperText, setText] = React.useState("");
   const [loading, setLoad] = React.useState(false);
+  const [exists, setExists] = React.useState<Existence | null>(null);
+  const [success, setSuccess] = React.useState(false);
+
+  // verify if email already exists
+  const verifyEmail = async (email: string) => {
+    try {
+      const res = await axios.get(`verify-user=true&email=${email}`);
+      setExists(res.data);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   // checking values on blur event
 
@@ -43,6 +57,8 @@ export default function SignUp() {
         ? ""
         : `${event.target.name} is required`
     );
+
+    if (e.target.name === "Email") verifyEmail(e.target.value);
   };
 
   // for closing the snack bar
@@ -87,6 +103,7 @@ export default function SignUp() {
       .then((res) => {
         if (res.status === 200) {
           setText("Data submitted");
+          setSuccess(true);
           resetUsername();
           resetEmail();
           resetName();
@@ -104,6 +121,7 @@ export default function SignUp() {
         setTimeout(() => {
           setText("");
           setLoad(false);
+          setSuccess(false);
         }, 3000)
       );
   };
@@ -128,6 +146,7 @@ export default function SignUp() {
       return false;
     }
   };
+
   return (
     <ErrorBoundary
       fallback={
@@ -183,6 +202,8 @@ export default function SignUp() {
             type="email"
             label="Enter email"
             onBlur={handleBlur}
+            helperText={exists?.status}
+            error={exists?.exists}
           />
           <TextField
             variant="filled"
@@ -222,15 +243,16 @@ export default function SignUp() {
             color="primary"
             disabled={loading}
           >
-            Submit
+            {loading ? "Submitting" : "Submit"}
           </Button>
-          <SnackBarComponent
-            helperText={helperText}
-            handleClose={handleClose}
-          />
-          <Link href="/">
-            <a>Login</a>
-          </Link>
+          <Alert className="mt-3 p-2" severity={success ? "success" : "error"}>
+            {helperText}
+          </Alert>
+          <div className="flex justify-center">
+            <Link href="/">
+              <a>Login</a>
+            </Link>
+          </div>
         </form>
       </Box>
     </ErrorBoundary>

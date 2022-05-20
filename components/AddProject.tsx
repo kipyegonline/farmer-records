@@ -10,9 +10,8 @@ import {
   LinearProgress,
   Alert,
 } from "@mui/material";
-import { CalendarMonth, CalendarViewDay } from "@mui/icons-material";
+import { CalendarMonth } from "@mui/icons-material";
 import axios from "axios";
-import { conformsTo } from "cypress/types/lodash";
 
 interface Project {
   name: string;
@@ -65,7 +64,7 @@ export default function AddProject(): JSX.Element {
           { headers: { authorization: `Bearer token` } }
         );
         if (res.status === 200) {
-          setText("Project created successfully...redirecting in moment");
+          setText(res?.data?.statusText);
           setTimeout(() => setText(""), 4000);
           setValue("name", "");
           setValue("duration", "");
@@ -74,12 +73,12 @@ export default function AddProject(): JSX.Element {
           setValue("description", "");
           setValue("estimatedCost", 0);
         } else {
-          throw new Error(res.statusText);
+          throw new Error(res.data.statusText);
         }
       } catch (error: unknown) {
         setText(error.message);
       }
-      setLoad(false);
+      setTimeout(() => setLoad(false), 3000);
     } else {
       return false;
     }
@@ -178,7 +177,9 @@ export default function AddProject(): JSX.Element {
         >
           {load ? "Creating project" : "Create Project"}
         </Button>
+
         {load && <LinearProgress className="my-2" color="primary" />}
+
         {!!helperText && (
           <Alert
             severity={helperText.includes("404") ? "error" : "success"}

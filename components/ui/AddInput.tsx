@@ -8,6 +8,8 @@ import {
   Typography,
   Box,
   InputAdornment,
+  Alert,
+  LinearProgress,
 } from "@mui/material";
 import UseInput, { SnackBarComponent } from "../../utils/input/useInput";
 import { SnackbarKey } from "notistack";
@@ -30,7 +32,6 @@ export default function AddInput() {
   };
 
   const onSubmit: SubmitHandler<InputProps> = (data: InputProps) => {
-    console.log(data, "fdeb");
     let cost = data.cost;
     if (cost.includes(",")) cost = +cost.split(",").join("");
 
@@ -46,9 +47,8 @@ export default function AddInput() {
       axios
         .post(`${process.env.api}?add-input=true`, payload)
         .then((res) => {
-          console.log("RES", res);
           if (res.status === 200) {
-            setText("Information added successfully!");
+            setText(res.data.statusText);
             setValue("date", "");
             setValue("input", "");
             setValue("cost", 0);
@@ -60,8 +60,10 @@ export default function AddInput() {
         })
         .catch((error) => setText(error.message))
         .finally(() => {
-          setTimeout(() => setText(""), 4000);
-          setLoad(false);
+          setTimeout(() => {
+            setText("");
+            setLoad(false);
+          }, 3000);
         });
       // reset state
     } else {
@@ -137,7 +139,10 @@ export default function AddInput() {
         >
           {load ? "Adding input" : "Add input"}
         </Button>
-        <SnackBarComponent helperText={helperText} handleClose={onClose} />
+        <div>
+          {load && <LinearProgress color="primary" />}
+          {!!helperText && <Alert severity="info">{helperText}</Alert>}
+        </div>
       </form>
     </Box>
   );
@@ -159,11 +164,6 @@ export const AddFarmNotes = () => {
     let target = e.target as HTMLInputElement;
     if (target.value.trim().length < 1) setText(`${target.name} is required`);
     setTimeout(() => setText(""), 4000);
-  };
-
-  const onClose = (e: React.MouseEvent, r: string): void | boolean => {
-    if (r === "clickaway") return false;
-    setText("");
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -194,7 +194,7 @@ export const AddFarmNotes = () => {
           setTimeout(() => {
             setText("");
             setload(false);
-          }, 4000);
+          }, 3000);
         });
     }
   };
@@ -235,7 +235,10 @@ export const AddFarmNotes = () => {
         >
           {load ? "Adding note" : "Add Note"}
         </Button>
-        <SnackBarComponent helperText={helperText} handleClose={onClose} />
+        <div>
+          {load && <LinearProgress color="primary" />}
+          {!!helperText && <Alert severity="info">{helperText}</Alert>}
+        </div>
       </form>
     </Box>
   );

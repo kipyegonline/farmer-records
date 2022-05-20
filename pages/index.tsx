@@ -12,9 +12,11 @@ import { Button, TextField } from "@mui/material";
 import UseInput from "../utils/input/useInput";
 import AddActivity from "../components/AddActivity";
 import AddProject from "../components/AddProject";
+import axios from "axios";
 
 const Home: NextPage = () => {
   const dispatch = useDispatch();
+
   React.useEffect(() => {
     dispatch(getProjects([{ name: "Jules" }]));
   }, []);
