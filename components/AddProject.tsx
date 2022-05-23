@@ -23,7 +23,7 @@ interface Project {
   completed: boolean;
   altId?: string;
 }
-export default function AddProject(): JSX.Element {
+export default function AddProject(): React.ReactNode {
   const [helperText, setText] = React.useState("");
   const [load, setLoad] = React.useState(false);
   const {
@@ -46,15 +46,16 @@ export default function AddProject(): JSX.Element {
 
   const onSubmit: SubmitHandler<Project> = async (data: Project) => {
     if (Object.values(data).length > 6 && Object.keys(errors).length <= 0) {
-      let cost = data.estimatedCost;
+      let cost: string | number = data.estimatedCost + "";
 
       if (cost.includes(",")) cost = cost.split(",").join("");
+      else cost = +cost;
 
       // send to server side
       const payload = {
         ...data,
         altId: v4(),
-        estimatedCost: +cost,
+        estimatedCost: cost,
       };
       try {
         setLoad(true);
@@ -72,13 +73,15 @@ export default function AddProject(): JSX.Element {
           setValue("endDate", "");
           setValue("description", "");
           setValue("estimatedCost", 0);
+          setTimeout(() => setLoad(false), 3000);
         } else {
           throw new Error(res.data.statusText);
         }
       } catch (error: unknown) {
+        setLoad(false);
         setText(error.message);
+        setTimeout(() => setText(""), 4000);
       }
-      setTimeout(() => setLoad(false), 3000);
     } else {
       return false;
     }

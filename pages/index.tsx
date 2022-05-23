@@ -1,26 +1,17 @@
 import React from "react";
 import type { NextPage } from "next";
-import Head from "next/head";
+import { useDispatch } from "react-redux";
 import Image from "next/image";
 import Link from "next/link";
 import Layout from "../components/ui/Layout";
 import styles from "../styles/Home.module.css";
-import Post from "./[id]";
-import { useDispatch } from "react-redux";
-import { getProjects } from "../Redux/projects.slice";
-import { Button, TextField } from "@mui/material";
-import UseInput from "../utils/input/useInput";
+
 import AddActivity from "../components/AddActivity";
 import AddProject from "../components/AddProject";
 import axios from "axios";
 
 const Home: NextPage = () => {
-  const dispatch = useDispatch();
-
-  React.useEffect(() => {
-    dispatch(getProjects([{ name: "Jules" }]));
-  }, []);
-  const myLoader = ({ src }) => src;
+  const myLoader = ({ src }: { src: string }) => src;
   return (
     <div className={styles.container}>
       <main className={styles.main}>

@@ -60,9 +60,9 @@ export default function AddInput() {
         })
         .catch((error) => setText(error.message))
         .finally(() => {
+          setLoad(false);
           setTimeout(() => {
             setText("");
-            setLoad(false);
           }, 3000);
         });
       // reset state
@@ -80,7 +80,7 @@ export default function AddInput() {
         onSubmit={handleSubmit(onSubmit)}
         data-testid="input-form"
       >
-        <Typography className="text-center" variant="subtitle1">
+        <Typography className="text-center bg-red-500" variant="subtitle1">
           Add project farm inputs
         </Typography>
         <TextField
@@ -140,8 +140,12 @@ export default function AddInput() {
           {load ? "Adding input" : "Add input"}
         </Button>
         <div>
-          {load && <LinearProgress color="primary" />}
-          {!!helperText && <Alert severity="info">{helperText}</Alert>}
+          {load && <LinearProgress color="primary" className="my-2" />}
+          {!!helperText && (
+            <Alert severity={helperText.includes("404") ? "error" : "success"}>
+              {helperText}
+            </Alert>
+          )}
         </div>
       </form>
     </Box>
@@ -186,14 +190,14 @@ export const AddFarmNotes = () => {
             resetDate();
             ResetNotes();
           } else if (res.status === 404) {
-            throw new Error(res.statusText);
+            throw new Error(`pipi:` + res.statusText);
           }
         })
         .catch((error) => setText(error.message))
         .finally(() => {
+          setload(false);
           setTimeout(() => {
             setText("");
-            setload(false);
           }, 3000);
         });
     }
@@ -209,6 +213,14 @@ export const AddFarmNotes = () => {
         <Typography paragraph className="text-center">
           Add Notes on farm progress today
         </Typography>
+        <div className="p-2 m-2">
+          <Typography className="text-center" variant="h5">
+            Add Farm activity Activity
+          </Typography>
+          <Typography>Presence of pests and diseases?</Typography>
+          <Typography>Fruits? Flowers? weeds? </Typography>
+          <Typography>Heavy rainfall or drought?</Typography>
+        </div>
         <TextField
           type="date"
           name="date"
@@ -235,9 +247,13 @@ export const AddFarmNotes = () => {
         >
           {load ? "Adding note" : "Add Note"}
         </Button>
-        <div>
-          {load && <LinearProgress color="primary" />}
-          {!!helperText && <Alert severity="info">{helperText}</Alert>}
+        <div className="my-2 w-full" >
+          {load && <LinearProgress className="my-2" color="primary" />}
+          {!!helperText && (
+            <Alert severity={helperText.includes("404") ? "error" : "success"}>
+              {helperText}
+            </Alert>
+          )}
         </div>
       </form>
     </Box>

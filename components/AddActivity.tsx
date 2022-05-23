@@ -7,11 +7,12 @@ import {
   Typography,
   InputAdornment,
   Alert,
+  LinearProgress,
 } from "@mui/material";
 import Box from "@mui/material/Box";
 import { useForm, SubmitHandler } from "react-hook-form";
 
-import { Check } from "@mui/icons-material";
+import { Check, Error } from "@mui/icons-material";
 
 interface Activity {
   activity: string;
@@ -36,14 +37,16 @@ export default function AddActivity() {
     defaultValues: { activity: "", date: "", totalCost: 0, description: "" },
   });
   const onSubmit: SubmitHandler<Activity> = async (data: Activity) => {
-    // send to server
-    let cost = data.totalCost;
+    // turn to string,Typescript
+    let cost: string | number = data.totalCost + "";
+
     // for cases where a number is entered with a comma
-    if (cost.includes(",")) cost = +cost.split(",").join("");
+    if (cost.includes(",")) cost = Number(cost.split(",").join(""));
+    else cost = Number(cost);
 
     const payload: Activity = {
       ...data,
-      totalCost: +data.totalCost,
+      totalCost: cost,
       altId: v4(),
     };
     if (Object.values(payload).length > 4 && Object.keys(errors).length <= 0) {
@@ -55,20 +58,25 @@ export default function AddActivity() {
           { headers: { authorization: `Bearer token` } }
         );
         if (res.status === 200) {
-          setText("Activity added!");
-          setTimeout(() => setText(""), 4000);
+          setText(res.data.statusText);
+          setTimeout(() => {
+            setText("");
+            setSuccess(false);
+          }, 4000);
 
           setValue("activity", "");
           setValue("date", "");
           setValue("description", "");
           setValue("totalCost", 0);
         } else {
-          throw new Error(res.statusText);
+          throw new ReferenceError(res.data.statusText);
         }
       } catch (error: unknown) {
         setText(error.message);
+        setSuccess(true);
+        setText("");
+        setSuccess(false);
       }
-      setSuccess(false);
     } else {
       return false;
     }
@@ -82,9 +90,6 @@ export default function AddActivity() {
         onSubmit={handleSubmit(onSubmit)}
         className="bg-white p-8 mx-auto flex flex-col justify-evenly "
       >
-        <Typography className="text-center" variant="h5">
-          Add Activity
-        </Typography>
         <TextField
           className="my-2 "
           label="Enter activity name"
@@ -126,15 +131,23 @@ export default function AddActivity() {
           type="submit"
           color="primary"
           variant="contained"
-          className="bg-blue-600 mt-4"
+          className="bg-blue-600 mt-4 mb-2"
           disabled={success}
         >
           {success ? "Adding activity" : "Add Activity"}
         </Button>
-        <p>{success ? "Loading" : "Loaded"} </p>
-        <Alert icon={<Check />} className="p-2 m-2" severity={"success"}>
-          {helperText}
-        </Alert>
+        <div className="my-2">
+          {success && <LinearProgress color="primary" />}
+          {!!helperText && (
+            <Alert
+              icon={helperText.includes("404") ? <Error /> : <Check />}
+              className="p-2 m-2"
+              severity={helperText.includes("404") ? "warning" : "success"}
+            >
+              {helperText}
+            </Alert>
+          )}
+        </div>
       </form>
     </Box>
   );

@@ -10,8 +10,10 @@ import {
   SnackbarCloseReason,
   Box,
   Alert,
+  LinearProgress,
+  ButtonGroup,
 } from "@mui/material";
-import UseInput, { SnackBarComponent } from "../utils/input/useInput";
+import UseInput from "../utils/input/useInput";
 
 import ErrorBoundary from "../utils/ErrorBoundary/ErrorBoundary";
 import Link from "next/link";
@@ -28,7 +30,7 @@ type Existence = { exists: boolean; status: string };
 
 export default function SignUp() {
   // state for form
-  const [name, resetName] = UseInput<string>("vince");
+  const [name, resetName] = UseInput<string>("");
   const [username, resetUsername] = UseInput("");
   const [password, resetPassword] = UseInput("");
   const [cpassword, resetcPassword] = UseInput("");
@@ -38,34 +40,36 @@ export default function SignUp() {
   const [loading, setLoad] = React.useState(false);
   const [exists, setExists] = React.useState<Existence | null>(null);
   const [success, setSuccess] = React.useState(false);
+  const [isLogin, setLogin] = React.useState(false);
 
   // verify if email already exists
   const verifyEmail = async (email: string) => {
     try {
-      const res = await axios.get(`verify-user=true&email=${email}`);
-      setExists(res.data);
+      const res = await axios.get(
+        `${process.env.api}?verify-user=true&email=${email}`
+      );
+
+      return res;
     } catch (error) {
-      console.log(error.message);
+      //return null;
+      throw new ReferenceError(error.message);
     }
   };
 
   // checking values on blur event
 
-  const handleBlur = (event: any) => {
+  const handleBlur = async (event: any) => {
     setText(
       event.target.value.trim().length > 0
         ? ""
         : `${event.target.name} is required`
     );
 
-    if (e.target.name === "Email") verifyEmail(e.target.value);
-  };
-
-  // for closing the snack bar
-  const handleClose = (e: Event, r: SnackbarCloseReason): void | boolean => {
-    if (r === "clickaway") return false;
-    console.log("click", r);
-    setText("");
+    if (event.target.name === "Email") {
+      const res = await verifyEmail(event.target.value);
+      console.log(res, "resss");
+      setExists(res?.data);
+    }
   };
 
   // validating values, i need a library to do this though
@@ -101,8 +105,9 @@ export default function SignUp() {
     axios
       .post(url, payload)
       .then((res) => {
+        setLoad(false);
         if (res.status === 200) {
-          setText("Data submitted");
+          setText(res.data.statusText);
           setSuccess(true);
           resetUsername();
           resetEmail();
@@ -116,11 +121,11 @@ export default function SignUp() {
       })
       .catch((error) => {
         setText(error.message);
+        setLoad(false);
       })
       .finally(() =>
         setTimeout(() => {
           setText("");
-          setLoad(false);
           setSuccess(false);
         }, 3000)
       );
@@ -138,8 +143,22 @@ export default function SignUp() {
         phone: phone.value,
         altId: v4(),
       };
-      let url = process.env.api + "?add-user=true";
-      sendToServer(url, payload);
+      verifyEmail(payload.email)
+        .then((res) => {
+          console.log(res, "ffs");
+          if (res?.data) {
+            setExists(res?.data);
+            setLoad(false);
+            return false;
+          } else {
+            let url = process.env.api + "?add-user=true";
+            sendToServer(url, payload);
+          }
+        })
+        .catch((error) => {
+          setLoad(false);
+          console.log("Eee", error.mesage);
+        });
     } else {
       //setText("All fields are required");
       // setTimeout(() => setText(""), 4000);
@@ -155,7 +174,7 @@ export default function SignUp() {
         </p>
       }
     >
-      <Box className="p-4 mt-8 flex flex-col justify-evenly flex-1  md:flex-row-reverse md:mt-2">
+      <Box className="p-4  mt-8 flex flex-col justify-evenly flex-1  md:flex-row-reverse md:mt-2">
         <AddFarmNotes />
         <AddActivity />
         <AddInput />
@@ -173,6 +192,14 @@ export default function SignUp() {
           >
             Join form
           </Typography>
+          <ButtonGroup className="flex justify-evenly items-center">
+            <Button className="w-fulli" variant="text">
+              Login
+            </Button>{" "}
+            <Button className="w-fulli" variant="text">
+              Sign up
+            </Button>
+          </ButtonGroup>
           <TextField
             variant="filled"
             className="my-1 py-1 px-1"
@@ -245,9 +272,19 @@ export default function SignUp() {
           >
             {loading ? "Submitting" : "Submit"}
           </Button>
-          <Alert className="mt-3 p-2" severity={success ? "success" : "error"}>
-            {helperText}
-          </Alert>
+          {loading && (
+            <div className="my-2 p-2">
+              <LinearProgress color="primary" />
+            </div>
+          )}
+          {!!helperText && (
+            <Alert
+              className="mt-3 p-2"
+              severity={success ? "success" : "error"}
+            >
+              {helperText}
+            </Alert>
+          )}
           <div className="flex justify-center">
             <Link href="/">
               <a>Login</a>
