@@ -26,13 +26,8 @@ export default function AddInput() {
     formState: { errors },
   } = useForm({ defaultValues: { input: "", date: "", cost: 0 } });
 
-  const onClose = (e: React.MouseEvent, r: SnackbarKey): void | boolean => {
-    if (r === "clickaway") return;
-    setText("");
-  };
-
   const onSubmit: SubmitHandler<InputProps> = (data: InputProps) => {
-    let cost = data.cost;
+    let cost = data.cost + "";
     if (cost.includes(",")) cost = +cost.split(",").join("");
 
     if (cost > 5 && data.date.trim().length > 8 && data.input.length > 3) {
@@ -247,7 +242,7 @@ export const AddFarmNotes = () => {
         >
           {load ? "Adding note" : "Add Note"}
         </Button>
-        <div className="my-2 w-full" >
+        <div className="my-2 w-full">
           {load && <LinearProgress className="my-2" color="primary" />}
           {!!helperText && (
             <Alert severity={helperText.includes("404") ? "error" : "success"}>

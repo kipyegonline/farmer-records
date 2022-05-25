@@ -11,14 +11,16 @@ import {
 } from "@mui/material";
 import { ErrorSharp } from "@mui/icons-material";
 import axios from "axios";
-import { stringify } from "querystring";
+
 import { useRouter } from "next/router";
+import { useLoginContext } from "../context/Login.context";
 
 type LoginProps = { usernameEmail: string; password: string };
 export default function Login() {
   const [helperText, setText] = React.useState("");
   const [load, setLoad] = React.useState(false);
   const router = useRouter();
+  const { setLogin } = useLoginContext();
   let timeout: any;
   const {
     register,
@@ -34,6 +36,7 @@ export default function Login() {
     if (password.trim().length > 5 && usernameEmail.trim().length > 3) {
       clearTimeout(timeout);
       setLoad(true);
+
       axios
         .post(`${process.env.api}?login=true`, { password, usernameEmail })
         .then((res) => {
@@ -44,6 +47,7 @@ export default function Login() {
                 "mkulimambunifu",
                 JSON.stringify(res?.data?.payload)
               );
+
               router.push("/", undefined, { shallow: false });
             } else {
               throw new Error(res.data.statusText);
@@ -53,6 +57,8 @@ export default function Login() {
           }
         })
         .catch((error) => {
+          console.log("the roach");
+          setLogin({ name: "jules", profileId: 3 });
           setText(error.message);
         })
         .finally(() => {
@@ -68,7 +74,7 @@ export default function Login() {
     <Paper className="m2" elevation={4}>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="bg-white flex flex-col m-2 p-4 "
+        className="bg-white flex flex-col mx-auto m-2 p-4 "
         style={{ maxWidth: 400 }}
       >
         <Typography variant="h5" className="text-center p-2 my-2">

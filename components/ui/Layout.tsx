@@ -2,50 +2,58 @@ import React from "react";
 import Head from "next/head";
 import Link from "next/link";
 import styles from "../../styles/layout.module.css";
+import ErrorBoundary from "../../utils/ErrorBoundary/ErrorBoundary";
 type Props = { children: React.ReactNode; title?: string };
 
 export default function Layout({ children, title = "" }: Props) {
   const [darkMode, setMode] = React.useState(false);
 
   return (
-    <div
-      className="bg-red-500  min-h-full my-2"
-      style={{ minHeight: "100vh" }}
-      data-theme={darkMode ? "dark" : "light"}
-    >
-      <Header title={title} />
-      <nav
-        data-testid="nav"
-        className="flex flex-row justify-evenly items-center"
-        style={navStyles("fixed")}
+    <ErrorBoundary fallback={<p>Error loading page...refresh</p>}>
+      <div
+        className="  min-h-full my-2"
+        style={{ minHeight: "100vh" }}
+        data-theme={darkMode ? "dark" : "light"}
       >
-        <h2>Farmer Records.</h2>
-        <button className="ml-5 " onClick={() => setMode((mode) => !mode)}>
-          {darkMode ? "Light" : "Dark"}
-        </button>
-        <ul className="flex items-center justify-around">
-          <li>
-            <Link href="/">
-              <a>Home</a>
-            </Link>
-          </li>
-          <li>
-            <Link href="/sign-up">
-              <a>Sign up</a>
-            </Link>
-          </li>
-        </ul>
-      </nav>
-      <main style={{ minHeight: "100vh" }}> {children}</main>
+        <Header title={title} />
+        <nav
+          data-testid="nav"
+          className="flex flex-row justify-evenly items-center"
+          style={navStyles("relative")}
+        >
+          <h2>Farmer Records.</h2>
+          <button className="ml-5 " onClick={() => setMode((mode) => !mode)}>
+            {darkMode ? "Light" : "Dark"}
+          </button>
+          <ul className="flex items-center justify-evenly mx-3">
+            <li className="mx-2">
+              <Link href="/">
+                <a>Home</a>
+              </Link>
+            </li>
+            <li className="mx-2">
+              <Link href="/sign-up">
+                <a>Sign up</a>
+              </Link>
+            </li>
+            <li className="mx-2">
+              <Link href="/login">
+                <a>Login</a>
+              </Link>
+            </li>
+          </ul>
+        </nav>
+        <main style={{ minHeight: "100vh" }}> {children}</main>
 
-      <footer
-        style={footerStyles()}
-        className=" bg-purple-500 sm:bg-yellow-500  flex flex-row md:flex-col"
-      >
-        <p>Get a job!</p>
-        <p> &copy; {new Date().getFullYear()}. All Rights Reserved.</p>
-      </footer>
-    </div>
+        <footer
+          style={footerStyles()}
+          className=" bg-purple-500 sm:bg-yellow-500  flex flex-row md:flex-col"
+        >
+          <p>Get a job!</p>
+          <p> &copy; {new Date().getFullYear()}. All Rights Reserved.</p>
+        </footer>
+      </div>
+    </ErrorBoundary>
   );
 }
 
@@ -80,6 +88,8 @@ const navStyles = (pos: "relative" | "fixed") => ({
   position: pos,
   top: 0,
   left: 0,
+  height: 40,
+  lineHeight: 1.2,
   right: 0,
   borderBottom: "1px solid #333",
   zIndex: 10,

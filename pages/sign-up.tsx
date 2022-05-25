@@ -41,7 +41,6 @@ export default function SignUp() {
   const [exists, setExists] = React.useState<Existence | null>(null);
   const [success, setSuccess] = React.useState(false);
 
-  const { isLoggedin } = useLoginContext();
   // verify if email already exists
 
   const verifyEmail = async (email: string) => {
@@ -146,7 +145,6 @@ export default function SignUp() {
       };
       verifyEmail(payload.email)
         .then((res) => {
-          console.log(res, "ffs");
           if (res?.data) {
             setExists(res?.data);
             setLoad(false);

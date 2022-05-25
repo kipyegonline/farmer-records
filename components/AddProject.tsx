@@ -73,13 +73,13 @@ export default function AddProject(): React.ReactNode {
           setValue("endDate", "");
           setValue("description", "");
           setValue("estimatedCost", 0);
-          setTimeout(() => setLoad(false), 3000);
+          setLoad(false);
         } else {
           throw new Error(res.data.statusText);
         }
       } catch (error: unknown) {
         setLoad(false);
-        setText(error.message);
+        setText(error?.message);
         setTimeout(() => setText(""), 4000);
       }
     } else {

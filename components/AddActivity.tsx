@@ -61,8 +61,8 @@ export default function AddActivity() {
           setText(res.data.statusText);
           setTimeout(() => {
             setText("");
-            setSuccess(false);
           }, 4000);
+          setSuccess(false);
 
           setValue("activity", "");
           setValue("date", "");
@@ -72,10 +72,12 @@ export default function AddActivity() {
           throw new ReferenceError(res.data.statusText);
         }
       } catch (error: unknown) {
-        setText(error.message);
-        setSuccess(true);
-        setText("");
-        setSuccess(false);
+        if (typeof error === "object") {
+          setText(error.message);
+          setSuccess(true);
+          setText("");
+          setSuccess(false);
+        }
       }
     } else {
       return false;
@@ -83,13 +85,14 @@ export default function AddActivity() {
   };
   //console.log(errors);
   return (
-    <Box>
+    <Box className="p-4">
       <form
         ref={form}
         style={{ maxWidth: 400, padding: "2rem" }}
         onSubmit={handleSubmit(onSubmit)}
         className="bg-white p-8 mx-auto flex flex-col justify-evenly "
       >
+        <Typography variant="h3">Add latest farm activity</Typography>
         <TextField
           className="my-2 "
           label="Enter activity name"

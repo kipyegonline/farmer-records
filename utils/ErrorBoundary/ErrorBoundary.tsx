@@ -10,10 +10,10 @@ export default class ErrorBoundary extends Component<Props, State> {
     this.checkNetwork = this.checkNetwork.bind(this);
   }
   componentDidMount() {
-    this.timer = setInterval(this.checkNetwork, 1000);
+    //this.timer = setInterval(this.checkNetwork, 1000);
   }
   componentWillUnmount() {
-    clearInterval(this.timer);
+    //clearInterval(this.timer);
   }
   static getDeriveStateFromError(error: string) {
     return { error };

@@ -1,21 +1,25 @@
 import React from "react";
 import { Backdrop, CircularProgress, Typography } from "@mui/material";
+import { useRouter } from "next/router";
+import Login from "../pages/login";
 
 const LoginContext = React.createContext({});
 
 export const useLoginContext = () => React.useContext(LoginContext);
 
 export default function LoginContextComponent({ children }) {
-  const [isLoggedIn, setLogin] = React.useState(null);
+  const [isLoggedIn, setLogin] = React.useState(-1);
+  const router = useRouter();
   const getUser = () =>
     globalThis.window &&
     JSON.parse(localStorage.getItem("mkulimambunifu") as window);
 
   React.useEffect(() => {
     const payload = getUser();
-    if (payload) setLogin(payload);
-    else setLogin({});
-  }, []);
+    console.log("login context");
+    if (payload) console.log("fifo"); //setLogin(payload);
+    else setLogin(null);
+  }, [isLoggedIn?.name]);
 
   // JSX for SSR and CSR
   if (globalThis.window) {
@@ -25,15 +29,17 @@ export default function LoginContextComponent({ children }) {
           {children}
         </LoginContext.Provider>
       );
-    else return <LoadingSpinner />;
+    else if (isLoggedIn === -1) return <LoadingSpinner />;
+    else return <Login />;
   } else {
     if (isLoggedIn)
       return (
-        <LoginContext.Provider value={{ isLoggedIn }}>
+        <LoginContext.Provider value={{ isLoggedIn, setLogin }}>
           {children}
         </LoginContext.Provider>
       );
-    else return <LoadingSpinner />;
+    else if (isLoggedIn === -1) return <LoadingSpinner />;
+    else return <Login />;
   }
 }
 
