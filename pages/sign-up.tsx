@@ -1,20 +1,20 @@
 import React from "react";
 import axios from "axios";
 import { v4 } from "uuid";
+
 import type { NextPage } from "next";
 import {
   TextField,
   Button,
   Typography,
   Card,
-  SnackbarCloseReason,
   Box,
   Alert,
   LinearProgress,
   ButtonGroup,
 } from "@mui/material";
 import UseInput from "../utils/input/useInput";
-
+import { useLoginContext } from "../context/Login.context";
 import ErrorBoundary from "../utils/ErrorBoundary/ErrorBoundary";
 import Link from "next/link";
 import AddInput, { AddFarmNotes } from "../components/ui/AddInput";
@@ -40,9 +40,10 @@ export default function SignUp() {
   const [loading, setLoad] = React.useState(false);
   const [exists, setExists] = React.useState<Existence | null>(null);
   const [success, setSuccess] = React.useState(false);
-  const [isLogin, setLogin] = React.useState(false);
 
+  const { isLoggedin } = useLoginContext();
   // verify if email already exists
+
   const verifyEmail = async (email: string) => {
     try {
       const res = await axios.get(
@@ -178,6 +179,7 @@ export default function SignUp() {
         <AddFarmNotes />
         <AddActivity />
         <AddInput />
+
         <form
           onSubmit={handleSubmit}
           className="bg-white p-2 flex justify-evenly items-stretch  mx-auto mt-15 flex-1 flex-col border-2 border-white"

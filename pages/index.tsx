@@ -17,6 +17,7 @@ const Home: NextPage = () => {
       <main className={styles.main}>
         <div className="flex justify-evenly items-start">
           <AddProject />
+
           <hr />
 
           <AddActivity />

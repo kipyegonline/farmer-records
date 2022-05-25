@@ -7,13 +7,16 @@ import "../styles/tailwind.css";
 import Layout from "../components/ui/Layout";
 
 import store from "../Redux/store";
+import LoginContextComponent from "../context/Login.context";
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <Provider store={store}>
-      <Layout title="Home">
-        <Component {...pageProps} />
-      </Layout>
-    </Provider>
+    <LoginContextComponent>
+      <Provider store={store}>
+        <Layout title="Home">
+          <Component {...pageProps} />
+        </Layout>
+      </Provider>
+    </LoginContextComponent>
   );
 }
 
