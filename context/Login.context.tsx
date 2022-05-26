@@ -3,27 +3,43 @@ import { Backdrop, CircularProgress, Typography } from "@mui/material";
 import { useRouter } from "next/router";
 import Login from "../pages/login";
 
-const LoginContext = React.createContext({});
+/* eslint-disable no-undef */
+
+
+interface LoginContext {
+  children: React.ReactNode;
+}
+type isLoggedIn = number | null | Object;
+const LoginContext = React.createContext<{ getUser:()=>void ,removeUser:()=>void,isLoggedIn:isLoggedIn}>({
+  getUser() ,
+  removeUser (),
+  isLoggedIn:false
+});
 
 export const useLoginContext = () => React.useContext(LoginContext);
 
-export default function LoginContextComponent({ children }) {
-  const [isLoggedIn, setLogin] = React.useState(-1);
+export default function LoginContextComponent({ children }:{children:React.ReactNode}) {
+  const [isLoggedIn, setLogin] = React.useState<isLoggedIn>(-1);
+  let mkulima = "mkulimambunifu";
+
   const router = useRouter();
+  // get user from local storage
   const getUser = () =>
-    globalThis.window &&
-    JSON.parse(localStorage.getItem("mkulimambunifu") as window);
+    globalThis.window && JSON.parse(localStorage.getItem(mkulima) as  window);
+  // remove user during log out
+  const removeUser = () =>
+    globalThis.window && (localStorage.removeItem("mkulimambunifu") as window);
 
   React.useEffect(() => {
     const payload = getUser();
     console.log("login context");
-    if (payload) console.log("fifo"); //setLogin(payload);
+    if (payload) setLogin(payload);
     else setLogin(null);
   }, [isLoggedIn?.name]);
 
   // JSX for SSR and CSR
   if (globalThis.window) {
-    if (isLoggedIn)
+    if (typeof isLoggedIn === "object")
       return (
         <LoginContext.Provider value={{ isLoggedIn }}>
           {children}
@@ -34,7 +50,7 @@ export default function LoginContextComponent({ children }) {
   } else {
     if (isLoggedIn)
       return (
-        <LoginContext.Provider value={{ isLoggedIn, setLogin }}>
+        <LoginContext.Provider value={{ isLoggedIn, setLogin, removeUser }}>
           {children}
         </LoginContext.Provider>
       );

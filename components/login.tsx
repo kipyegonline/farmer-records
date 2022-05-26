@@ -47,8 +47,8 @@ export default function Login() {
                 "mkulimambunifu",
                 JSON.stringify(res?.data?.payload)
               );
-
-              router.push("/", undefined, { shallow: false });
+              location.pathname = "/";
+              //router.push("/", undefined, { shallow: false });
             } else {
               throw new Error(res.data.statusText);
             }
@@ -93,7 +93,6 @@ export default function Login() {
         <TextField
           className="my-2"
           type="password"
-          required
           label="Password"
           error={!!errors.password}
           {...register("password", { required: true, minLength: 5 })}
