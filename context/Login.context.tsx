@@ -5,27 +5,34 @@ import Login from "../pages/login";
 
 /* eslint-disable no-undef */
 
-
 interface LoginContext {
   children: React.ReactNode;
 }
 type isLoggedIn = number | null | Object;
-const LoginContext = React.createContext<{ getUser:()=>void ,removeUser:()=>void,isLoggedIn:isLoggedIn}>({
-  getUser() ,
-  removeUser (),
-  isLoggedIn:false
+const LoginContext = React.createContext<{
+  getUser: () => void;
+  removeUser: () => void;
+  isLoggedIn: isLoggedIn;
+}>({
+  getUser: () => {},
+  removeUser: () => {},
+  isLoggedIn: false,
 });
 
 export const useLoginContext = () => React.useContext(LoginContext);
 
-export default function LoginContextComponent({ children }:{children:React.ReactNode}) {
+export default function LoginContextComponent({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [isLoggedIn, setLogin] = React.useState<isLoggedIn>(-1);
   let mkulima = "mkulimambunifu";
 
   const router = useRouter();
   // get user from local storage
   const getUser = () =>
-    globalThis.window && JSON.parse(localStorage.getItem(mkulima) as  window);
+    globalThis.window && JSON.parse(localStorage.getItem(mkulima) as window);
   // remove user during log out
   const removeUser = () =>
     globalThis.window && (localStorage.removeItem("mkulimambunifu") as window);
