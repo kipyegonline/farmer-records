@@ -1,9 +1,10 @@
 import React from "react";
 
 export default function HandleLogin(req, res) {
-  console.log(req, "request");
+  console.log(req.cookies, "request");
+
   const {
     query: { name },
   } = req;
-  res.send({ name, id: 1 });
+  res.json({ name, id: 1 });
 }
